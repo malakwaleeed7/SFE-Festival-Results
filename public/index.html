@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>🏆 Festival Results</title>
+    <title>SFE-Festival-Winners</title></title>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -300,10 +300,10 @@ function App() {
     
     return (
         <div className="container">
-            <div className="header">
-                <div className="header-icon">🏆</div>
-                <h1>Festival Results</h1>
-                <p>Student For Egypt - Ain Shams University</p>
+           <div className="header">
+                <img src="logo.png" alt="Logo" style={{ width: 70, height: 70, borderRadius: '50%', marginBottom: 12 }} />
+                <h1>Students For Egypt Festival</h1>
+                <p>Ain Shams University</p>
             </div>
             
             {loading ? <div className="loading"><div className="spinner"></div></div> : games.map(g => (
