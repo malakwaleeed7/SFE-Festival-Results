@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>SFE-Festival</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #6366F1;
+            --primary-dark: #4F46E5;
+            --success: #10B981;
+            --danger: #EF4444;
+            --bg-main: #F8FAFC;
+            --bg-card: #FFFFFF;
+            --text-primary: #1E293B;
+            --text-secondary: #64748B;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Cairo', sans-serif; background: var(--bg-main); color: var(--text-primary); min-height: 100vh; }
+        .container { max-width: 500px; margin: 0 auto; padding: 16px; padding-bottom: 100px; }
+        
+        .header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: #fff; padding: 24px 20px; border-radius: 0 0 24px 24px;
+            margin: -16px -16px 20px -16px; text-align: center;
+        }
+        .header h1 { font-size: 24px; font-weight: 900; margin-bottom: 4px; }
+        .header p { font-size: 14px; opacity: 0.9; }
+        
+        .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 12px 20px; border-radius: 12px; font-weight: 700; font-size: 14px; border: none; cursor: pointer; transition: all 0.2s; font-family: inherit; }
+        .btn-primary { background: var(--primary); color: #fff; }
+        .btn-primary:hover { background: var(--primary-dark); }
+        .btn-success { background: var(--success); color: #fff; }
+        .btn-danger { background: var(--danger); color: #fff; }
+        .btn-outline { background: transparent; border: 2px solid var(--primary); color: var(--primary); }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        
+        .input, select, textarea { width: 100%; padding: 14px 16px; border: 2px solid #E2E8F0; border-radius: 12px; font-size: 15px; font-family: inherit; background: #fff; }
+        .input:focus, select:focus, textarea:focus { outline: none; border-color: var(--primary); }
+        
+        .medal { display: inline-flex; align-items: center; gap: 6px; padding: 6px 14px; border-radius: 50px; font-weight: 700; font-size: 13px; }
+        .medal-1 { background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%); color: #5D4E00; }
+        .medal-2 { background: linear-gradient(135deg, #E8E8E8 0%, #C0C0C0 100%); color: #444; }
+        .medal-3 { background: linear-gradient(135deg, #CD7F32 0%, #B87333 100%); color: #fff; }
+        .medal-4 { background: linear-gradient(135deg, #8B5CF6 0%, #7C3AED 100%); color: #fff; }
+        .medal-5 { background: linear-gradient(135deg, #06B6D4 0%, #0891B2 100%); color: #fff; }
+        
+        .game-card { background: var(--bg-card); border-radius: 16px; padding: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); margin-bottom: 12px; border-right: 4px solid var(--primary); }
+        .game-header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+        .game-icon { width: 48px; height: 48px; border-radius: 12px; background: rgba(99, 102, 241, 0.1); display: flex; align-items: center; justify-content: center; font-size: 24px; }
+        .game-name { font-size: 16px; font-weight: 800; }
+        
+        .winner-row { display: flex; align-items: center; gap: 12px; padding: 10px 12px; background: var(--bg-main); border-radius: 10px; margin-bottom: 8px; }
+        .winner-row:last-child { margin-bottom: 0; }
+        .winner-info { flex: 1; }
+        .winner-name { font-weight: 700; font-size: 14px; }
+        .winner-faculty { font-size: 12px; color: var(--text-secondary); }
+        
+        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; padding: 20px; z-index: 1000; }
+        .modal { background: var(--bg-card); border-radius: 20px; padding: 24px; width: 100%; max-width: 400px; max-height: 90vh; overflow-y: auto; }
+        
+        .toast { position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%); background: var(--text-primary); color: #fff; padding: 12px 24px; border-radius: 50px; font-weight: 600; z-index: 2000; }
+        
+        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: var(--bg-card); padding: 12px 20px; box-shadow: 0 -4px 20px rgba(0,0,0,0.1); display: flex; justify-content: center; gap: 12px; z-index: 100; }
+        
+        .loading { display: flex; align-items: center; justify-content: center; padding: 60px; }
+        .spinner { width: 40px; height: 40px; border: 4px solid #E2E8F0; border-top-color: var(--primary); border-radius: 50%; animation: spin 0.8s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        
+        .view-players { font-size: 11px; color: var(--primary); cursor: pointer; margin-top: 4px; }
+        .view-players:hover { text-decoration: underline; }
+        
+        .login-container { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; }
+        .login-card { background: var(--bg-card); border-radius: 24px; padding: 32px; width: 100%; max-width: 360px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); text-align: center; }
+        .login-icon { width: 80px; height: 80px; background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 40px; margin: 0 auto 20px; }
+        
+        .empty { text-align: center; padding: 20px; color: var(--text-secondary); font-size: 13px; }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script type="text/babel">
+const { useState, useEffect } = React;
+
+const api = {
+    get: async (url) => {
+        const token = localStorage.getItem('token');
+        const res = await fetch(url, { headers: token ? { 'Authorization': `Bearer ${token}` } : {} });
+        if (!res.ok) throw new Error('Error');
+        return res.json();
+    },
+    post: async (url, data) => {
+        const token = localStorage.getItem('token');
+        const res = await fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', ...(token ? { 'Authorization': `Bearer ${token}` } : {}) },
+            body: JSON.stringify(data)
+        });
+        if (!res.ok) throw new Error('Error');
+        return res.json();
+    },
+    delete: async (url) => {
+        const token = localStorage.getItem('token');
+        const res = await fetch(url, { method: 'DELETE', headers: token ? { 'Authorization': `Bearer ${token}` } : {} });
+        if (!res.ok) throw new Error('Error');
+        return res.json();
+    }
+};
+
+const Medal = ({ position }) => {
+    const labels = { 1: '🥇 First', 2: '🥈 Second', 3: '🥉 Third', 4: '4️⃣ Fourth', 5: '5️⃣ Fifth' };
+    return <span className={`medal medal-${position}`}>{labels[position]}</span>;
+};
+
+const Toast = ({ message, onClose }) => {
+    useEffect(() => { const t = setTimeout(onClose, 3000); return () => clearTimeout(t); }, []);
+    return <div className="toast">{message}</div>;
+};
+
+const LoginPage = ({ onLogin, showToast }) => {
+    const [code, setCode] = useState('');
+    const [loading, setLoading] = useState(false);
+    
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        setLoading(true);
+        try {
+            const data = await api.post('/api/login', { code });
+            localStorage.setItem('token', data.token);
+            onLogin(data.user);
+            showToast('Welcome! 🎉');
+        } catch (e) { showToast('Invalid code'); }
+        setLoading(false);
+    };
+    
+    return (
+        <div className="login-container">
+            <form className="login-card" onSubmit={handleSubmit}>
+                <div className="login-icon">🔐</div>
+                <h2 style={{ fontSize: 22, fontWeight: 800, marginBottom: 8 }}>Admin Access</h2>
+                <p style={{ color: 'var(--text-secondary)', marginBottom: 24, fontSize: 14 }}>Enter access code</p>
+                <input type="password" className="input" placeholder="Access Code" value={code} onChange={e => setCode(e.target.value)} style={{ textAlign: 'center', fontSize: 24, letterSpacing: 8, marginBottom: 24 }} required />
+                <button type="submit" className="btn btn-primary" style={{ width: '100%' }} disabled={loading}>{loading ? 'Verifying...' : 'Enter'}</button>
+            </form>
+        </div>
+    );
+};
+
+const AddModal = ({ games, faculties, onClose, onSave }) => {
+    const [gameId, setGameId] = useState('');
+    const [position, setPosition] = useState(1);
+    const [name, setName] = useState('');
+    const [faculty, setFaculty] = useState('');
+    const [players, setPlayers] = useState('');
+    const [saving, setSaving] = useState(false);
+    
+    const game = games.find(g => g.id === gameId);
+    const isTeam = game?.type === 'team';
+    
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        setSaving(true);
+        try {
+            await api.post('/api/results', { game_id: gameId, position, participant_name: name, faculty, team_players: isTeam ? players : null });
+            onSave();
+        } catch (e) { alert('Error saving'); }
+        setSaving(false);
+    };
+    
+    return (
+        <div className="modal-overlay" onClick={onClose}>
+            <div className="modal" onClick={e => e.stopPropagation()}>
+                <h2 style={{ fontSize: 20, fontWeight: 800, marginBottom: 20 }}>🏆 Add Result</h2>
+                <form onSubmit={handleSubmit}>
+                    <div style={{ marginBottom: 16 }}>
+                        <label style={{ display: 'block', fontSize: 14, fontWeight: 600, marginBottom: 6 }}>Game</label>
+                        <select className="input" value={gameId} onChange={e => setGameId(e.target.value)} required>
+                            <option value="">Select...</option>
+                            {games.map(g => <option key={g.id} value={g.id}>{g.icon} {g.name}</option>)}
+                        </select>
+                    </div>
+                    <div style={{ marginBottom: 16 }}>
+                        <label style={{ display: 'block', fontSize: 14, fontWeight: 600, marginBottom: 6 }}>Position</label>
+                        <select className="input" value={position} onChange={e => setPosition(e.target.value)} required>
+                            <option value={1}>🥇 First Place</option>
+                            <option value={2}>🥈 Second Place</option>
+                            <option value={3}>🥉 Third Place</option>
+                            <option value={4}>4️⃣ Fourth Place</option>
+                            <option value={5}>5️⃣ Fifth Place</option>
+                        </select>
+                    </div>
+                    <div style={{ marginBottom: 16 }}>
+                        <label style={{ display: 'block', fontSize: 14, fontWeight: 600, marginBottom: 6 }}>{isTeam ? 'Team Name' : 'Winner Name'}</label>
+                        <input type="text" className="input" placeholder="Enter name..." value={name} onChange={e => setName(e.target.value)} required />
+                    </div>
+                    <div style={{ marginBottom: 16 }}>
+                        <label style={{ display: 'block', fontSize: 14, fontWeight: 600, marginBottom: 6 }}>Faculty</label>
+                        <select className="input" value={faculty} onChange={e => setFaculty(e.target.value)} required>
+                            <option value="">Select...</option>
+                            {faculties.map(f => <option key={f} value={f}>{f}</option>)}
+                        </select>
+                    </div>
+                    {isTeam && (
+                        <div style={{ marginBottom: 16 }}>
+                            <label style={{ display: 'block', fontSize: 14, fontWeight: 600, marginBottom: 6 }}>Players (one per line)</label>
+                            <textarea className="input" rows={4} placeholder="Player 1&#10;Player 2..." value={players} onChange={e => setPlayers(e.target.value)} />
+                        </div>
+                    )}
+                    <div style={{ display: 'flex', gap: 12 }}>
+                        <button type="button" className="btn btn-outline" style={{ flex: 1 }} onClick={onClose}>Cancel</button>
+                        <button type="submit" className="btn btn-success" style={{ flex: 1 }} disabled={saving}>{saving ? 'Saving...' : 'Save'}</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    );
+};
+
+const PlayersModal = ({ teamName, players, onClose }) => {
+    const list = players ? players.split('\n').filter(p => p.trim()) : [];
+    return (
+        <div className="modal-overlay" onClick={onClose}>
+            <div className="modal" onClick={e => e.stopPropagation()}>
+                <h2 style={{ fontSize: 18, fontWeight: 800, marginBottom: 16 }}>👥 {teamName}</h2>
+                {list.length > 0 ? list.map((p, i) => (
+                    <div key={i} style={{ padding: 12, background: 'var(--bg-main)', borderRadius: 10, marginBottom: 8, display: 'flex', alignItems: 'center', gap: 12 }}>
+                        <span style={{ width: 28, height: 28, background: 'var(--primary)', color: '#fff', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, fontWeight: 700 }}>{i + 1}</span>
+                        <span style={{ fontWeight: 600 }}>{p}</span>
+                    </div>
+                )) : <p className="empty">No players added yet</p>}
+                <button className="btn btn-outline" style={{ width: '100%', marginTop: 12 }} onClick={onClose}>Close</button>
+            </div>
+        </div>
+    );
+};
+
+const GameCard = ({ game, results, isAdmin, onDelete, onViewPlayers }) => {
+    const gameResults = results.filter(r => r.game_id === game.id).sort((a, b) => a.position - b.position);
+    const isTeam = game.type === 'team';
+    
+    return (
+        <div className="game-card">
+            <div className="game-header">
+                <div className="game-icon">{game.icon}</div>
+                <div className="game-name">{game.name}</div>
+            </div>
+            {gameResults.length > 0 ? gameResults.map(r => (
+                <div key={r.id} className="winner-row">
+                    <Medal position={r.position} />
+                    <div className="winner-info">
+                        <div className="winner-name">{r.participant_name || 'TBD'}</div>
+                        <div className="winner-faculty">{r.faculty}</div>
+                        {isTeam && <div className="view-players" onClick={() => onViewPlayers(r.participant_name, r.team_players)}>👥 View Players</div>}
+                    </div>
+                    {isAdmin && <button onClick={() => onDelete(game.id, r.position)} style={{ background: 'none', border: 'none', color: 'var(--danger)', cursor: 'pointer', padding: 8, fontSize: 16 }}>🗑️</button>}
+                </div>
+            )) : <p className="empty">No results yet</p>}
+        </div>
+    );
+};
+
+function App() {
+    const [user, setUser] = useState(null);
+    const [games, setGames] = useState([]);
+    const [faculties, setFaculties] = useState([]);
+    const [results, setResults] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [showLogin, setShowLogin] = useState(false);
+    const [showAdd, setShowAdd] = useState(false);
+    const [toast, setToast] = useState(null);
+    const [playersModal, setPlayersModal] = useState(null);
+    
+    const showToast = (msg) => setToast(msg);
+    
+    const loadData = async () => {
+        try {
+            const [g, f, r] = await Promise.all([api.get('/api/games'), api.get('/api/faculties'), api.get('/api/results')]);
+            setGames(g); setFaculties(f); setResults(r);
+        } catch (e) { console.error(e); }
+        setLoading(false);
+    };
+    
+    useEffect(() => {
+        const token = localStorage.getItem('token');
+        if (token) api.get('/api/me').then(d => setUser(d)).catch(() => localStorage.removeItem('token'));
+        loadData();
+    }, []);
+    
+    const handleLogout = () => { localStorage.removeItem('token'); setUser(null); showToast('Logged out'); };
+    
+    const handleDelete = async (gameId, position) => {
+        if (!confirm('Delete?')) return;
+        try { await api.delete(`/api/results/${gameId}/${position}`); showToast('Deleted'); loadData(); } catch (e) { showToast('Error'); }
+    };
+    
+    if (showLogin && !user) return (<><LoginPage onLogin={u => { setUser(u); setShowLogin(false); }} showToast={showToast} />{toast && <Toast message={toast} onClose={() => setToast(null)} />}</>);
+    
+    return (
+        <div className="container">
+            <div className="header">
+                <img src="logo.png" alt="Logo" style={{ width: 100, height: 100, marginBottom: 12 }} />
+                <h1>Students For Egypt Festival</h1>
+                <p>Ain Shams University</p>
+            </div>
+            
+            {loading ? <div className="loading"><div className="spinner"></div></div> : games.map(g => (
+                <GameCard key={g.id} game={g} results={results} isAdmin={!!user} onDelete={handleDelete} onViewPlayers={(n, p) => setPlayersModal({ name: n, players: p })} />
+            ))}
+            
+            {user ? (
+                <div className="bottom-nav">
+                    <button className="btn btn-primary" onClick={() => setShowAdd(true)}>➕ Add Result</button>
+                    <button className="btn btn-outline" onClick={handleLogout}>🚪 Logout</button>
+                </div>
+            ) : (
+                <div className="bottom-nav">
+                    <button className="btn btn-outline" onClick={() => setShowLogin(true)}>🔐 Admin Login</button>
+                </div>
+            )}
+            
+            {showAdd && <AddModal games={games} faculties={faculties} onClose={() => setShowAdd(false)} onSave={() => { setShowAdd(false); showToast('Saved! 🎉'); loadData(); }} />}
+            {playersModal && <PlayersModal teamName={playersModal.name} players={playersModal.players} onClose={() => setPlayersModal(null)} />}
+            {toast && <Toast message={toast} onClose={() => setToast(null)} />}
+        </div>
+    );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+    </script>
+</body>
+</html>
