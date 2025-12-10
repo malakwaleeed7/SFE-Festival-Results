@@ -39,11 +39,11 @@ const defaultData = {
         { id: 'tug_of_war', name: 'Tug of War', icon: '🪢', type: 'team' }
     ],
     faculties: [
-        'Agriculture', 'Archaeology', 'Arts', 'Arts & Humanities', 'Commerce',
-        'Computer Science', 'Computers & IT', 'Dentistry', 'Education',
+        'Agriculture', 'Archaeology', 'Arts', 'Al-Alsun', 'Business',
+        'Computer Science',  'Dentistry', 'Education',
         'Engineering', 'Girls College', 'Home Economics', 'Law',
         'Mass Communication', 'Medicine', 'Nursing', 'Pharmacy',
-        'Science', 'Technical Education', 'Veterinary Medicine'
+        'Science', 'Special Education', 'Veterinary Medicine'
     ],
     results: []
 };
